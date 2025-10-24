@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -41,12 +43,7 @@ public class PortConfig implements InitializingBean {
     private List<PortEntry> portConfigurationList = Collections.emptyList();
     private final S3Client s3Client;
 
-    // Default constructor for Spring
-    public PortConfig() {
-        this.s3Client = null;
-    }
-
-    // Constructor for test injection (not used by Spring)
+    @Autowired
     public PortConfig(S3Client s3Client) {
         this.s3Client = s3Client;
     }
@@ -106,9 +103,12 @@ public class PortConfig implements InitializingBean {
             return;
         }
 
-        S3Client s3 = (this.s3Client != null)
-                ? this.s3Client
-                : S3Client.builder().region(software.amazon.awssdk.regions.Region.of(region)).build();
+        // Use injected S3Client (configured centrally in AwsConfig)
+        if (this.s3Client == null) {
+            log.error("PortConfig: S3Client bean not available - cannot load port config");
+            return;
+        }
+        S3Client s3 = this.s3Client;
 
         GetObjectRequest req = GetObjectRequest.builder()
                 .bucket(bucket)
@@ -120,12 +120,12 @@ public class PortConfig implements InitializingBean {
             log.info("PortConfig: Attempting to load port config from s3://{}/{} (region={})", bucket, key, region);
             ResponseBytes<GetObjectResponse> bytes = s3.getObjectAsBytes(req);
             byte[] data = bytes.asByteArray();
-            log.debug("PortConfig: Fetched {} bytes from s3://{}/{}", data.length, bucket, key);
+            log.info("PortConfig: Fetched {} bytes from s3://{}/{}", data.length, bucket, key);
 
             rawJson = new String(data, StandardCharsets.UTF_8);
             // Log up to first 2KB to avoid huge logs
             String preview = rawJson.length() > 2048 ? rawJson.substring(0, 2048) + "...(truncated)" : rawJson;
-            log.trace("PortConfig: JSON preview: {}", preview);
+            log.info("PortConfig: JSON preview: {}", preview);
 
             ObjectMapper mapper = new ObjectMapper();
             portConfigurationList = mapper.readValue(rawJson, new TypeReference<List<PortEntry>>() {
