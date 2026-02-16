@@ -1,10 +1,10 @@
 <channel version="4.6.1">
-  <id>42c12cfa-3058-4362-ba17-0ba4df9a6252</id>
+  <id>c79799dd-a972-4d99-beba-1331ed5e49a2</id>
   <nextMetaDataId>3</nextMetaDataId>
   <name>TechBD HL7 Workflow</name>
-  <description>Version: 0.1.21
-Update ZIP upload file extension validation message</description>
-  <revision>3</revision>
+  <description>Version: 0.1.22
+The issue with the Grouper ID format for HL7 has been fixed.</description>
+  <revision>10</revision>
   <sourceConnector version="4.6.1">
     <metaDataId>0</metaDataId>
     <name>sourceConnector</name>
@@ -1694,7 +1694,7 @@ try {
 
     transformer = generateSHA256Id(rawTransformedData, &quot;observations&quot;, &quot;observationResourceSha256Id&quot;, transformer);
 
-    transformer = generateSHA256Id(rawTransformedData, &quot;groupObservations&quot;, &quot;observationResourceSha256Id&quot;, transformer);
+    transformer = generateSHA256Id(rawTransformedData, &quot;groupObservations&quot;, &quot;grouperObservationResourceSha256Id&quot;, transformer);
 
 
     // Retrieve the X-TechBD-Base-FHIR-URL header
@@ -2769,7 +2769,7 @@ return;</undeployScript>
     <metadata>
       <enabled>true</enabled>
       <lastModified>
-        <time>1770958181911</time>
+        <time>1771245398551</time>
         <timezone>Asia/Calcutta</timezone>
       </lastModified>
       <pruningSettings>
@@ -2780,13 +2780,13 @@ return;</undeployScript>
     </metadata>
     <channelTags>
       <channelTag>
-        <id>f4b0e56a-0573-44b4-a097-70d92b306a08</id>
-        <name>0_1_21</name>
+        <id>bf438288-8c86-4b4a-8339-26bc00378152</id>
+        <name>0_1_22</name>
         <channelIds>
-          <string>42c12cfa-3058-4362-ba17-0ba4df9a6252</string>
+          <string>c79799dd-a972-4d99-beba-1331ed5e49a2</string>
         </channelIds>
         <backgroundColor>
-          <red>255</red>
+          <red>128</red>
           <green>0</green>
           <blue>0</blue>
           <alpha>255</alpha>
