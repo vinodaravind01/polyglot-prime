@@ -64,7 +64,7 @@ public class NettyTcpServer implements MessageSourceProvider {
     private final MessageProcessorService messageProcessorService;
     private final AppConfig appConfig;
     private final PortResolverService portResolverService;
-    @Value("${TCP_DISPATCHER_PORT:6001}")
+    @Value("${TCP_DISPATCHER_PORT:7980}")
     private int tcpPort;
 
     @Value("${TCP_READ_TIMEOUT_SECONDS:180}")
