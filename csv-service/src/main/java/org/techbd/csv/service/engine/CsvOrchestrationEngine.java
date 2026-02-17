@@ -800,7 +800,7 @@ public class CsvOrchestrationEngine {
                     this::isGroupComplete);
 
             // Important: Capture the returned session UUID and processed file paths
-            final UUID processId = vfsCoreService.processFiles(consumer, ingresshomeFO);
+            final UUID processId = vfsCoreService.processFiles(consumer, ingresshomeFO,masterInteractionId);
             log.info("CsvService : processZipFilesFromInbound - END for zipFileInteractionId :{}" + masterInteractionId);
             return processId;
         }

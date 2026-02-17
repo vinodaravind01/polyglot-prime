@@ -74,6 +74,28 @@ public class CsvService {
         final var zipFileInteractionId = (String) requestParameters.get(Constants.MASTER_INTERACTION_ID);
         LOG.info("CsvService validateCsvFile BEGIN zip File interaction id  : {} tenant id : {}",
                 zipFileInteractionId, requestParameters.get(Constants.TENANT_ID));
+        if (file == null) {
+                LOG.error("CsvService validateCsvFile - File is null. InteractionId: {}",
+                                zipFileInteractionId);
+                throw new IllegalArgumentException("Uploaded file cannot be null");
+        }
+        if (file.isEmpty()) {
+                LOG.error("CsvService validateCsvFile - File is empty. InteractionId: {}, TenantId: {}",
+                                zipFileInteractionId);
+                throw new IllegalArgumentException("Uploaded file is empty");
+        }
+
+        long fileSizeBytes = file.getSize();
+        double fileSizeKB = fileSizeBytes / 1024.0;
+        double fileSizeMB = fileSizeKB / 1024.0;
+
+        LOG.info("CsvService validateCsvFile file received details - InteractionId: {}, TenantId: {}, FileName: {}, FileSize: {} bytes ({} KB / {} MB)",
+                        zipFileInteractionId,
+                        requestParameters.get(Constants.TENANT_ID),
+                        file.getOriginalFilename(),
+                        fileSizeBytes,
+                        String.format("%.2f", fileSizeKB),
+                        String.format("%.2f", fileSizeMB));        
         CsvOrchestrationEngine.OrchestrationSession session = null;
         try {
             saveArchiveInteraction(zipFileInteractionId, requestParameters, file,
@@ -400,8 +422,30 @@ public class CsvService {
         final var tenantId = (String) requestParameters.get(Constants.TENANT_ID);
         final var provenance = "%s.processZipFile".formatted(CsvService.class.getName());
         final String isSync = String.valueOf(requestParameters.get(Constants.IMMEDIATE));
-        LOG.info("CsvService processZipFile - BEGIN zipFileInteractionId: {} tenantId: {} isSync: {}",
-                zipFileInteractionId, tenantId, isSync);
+        LOG.info("CsvService validateCsvFile BEGIN zip File interaction id  : {} tenant id : {}",
+                zipFileInteractionId, requestParameters.get(Constants.TENANT_ID));
+        if (file == null) {
+                LOG.error("CsvService validateCsvFile - File is null. InteractionId: {}",
+                                zipFileInteractionId);
+                throw new IllegalArgumentException("Uploaded file cannot be null");
+        }
+        if (file.isEmpty()) {
+                LOG.error("CsvService validateCsvFile - File is empty. InteractionId: {}, TenantId: {}",
+                                zipFileInteractionId);
+                throw new IllegalArgumentException("Uploaded file is empty");
+        }
+
+        long fileSizeBytes = file.getSize();
+        double fileSizeKB = fileSizeBytes / 1024.0;
+        double fileSizeMB = fileSizeKB / 1024.0;
+
+        LOG.info("CsvService validateCsvFile file received details - InteractionId: {}, TenantId: {}, FileName: {}, FileSize: {} bytes ({} KB / {} MB)",
+                        zipFileInteractionId,
+                        requestParameters.get(Constants.TENANT_ID),
+                        file.getOriginalFilename(),
+                        fileSizeBytes,
+                        String.format("%.2f", fileSizeKB),
+                        String.format("%.2f", fileSizeMB));        
 
         // Ledger + Initial Archive
         auditInitialReceipt(zipFileInteractionId, provenance, requestParameters, file);
