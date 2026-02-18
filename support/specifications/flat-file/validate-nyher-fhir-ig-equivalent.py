@@ -6,6 +6,11 @@ from frictionless import Package, transform, steps, extract, Check, errors, Chec
 from datetime import datetime, date
 import re  # Import required for regular expression handling
 import calendar  # Import for leap year checking
+import difflib  # For finding close matches between schema and CSV headers
+import gc  # Garbage collection for memory optimization
+
+# Configurable limit for rows to extract per CSV file
+ROW_LIMIT = 100
 
 
 class OptionalYesNoFlagsCheck(Check):
@@ -224,6 +229,15 @@ def clean_results(results):
         del cleaned_results["errorsSummary"]
     return cleaned_results
 
+def extract_csv_headers(file_path):
+    """Extract CSV headers without loading entire file into memory"""
+    try:
+        with open(file_path, 'r') as f:
+            header_line = f.readline().strip()
+            return [h.strip() for h in header_line.split(',') if h.strip()]
+    except Exception:
+        return []
+
 def validate_package(spec_path, file1, file2, file3, file4, output_path):
     
     results = {
@@ -260,12 +274,24 @@ def validate_package(spec_path, file1, file2, file3, file4, output_path):
             print(json.dumps(cleaned_results, indent=4))
             return  # Skip Frictionless validation
         
-                # Only extract data if there are no errors in the summary
+        # Only extract data if there are no errors in the summary
         if not results["errorsSummary"]:
             # Parse CSV files into JSON format using `extract` and store in results["originalData"]
+            # Store only first ROW_LIMIT rows per file to avoid memory overload
             for resource_name, file_path in file_mappings.items():
-                rows = extract(file_path)  # Extract data from CSV
-                results["originalData"][resource_name] = rows
+                try:
+                    rows = []
+                    with open(file_path, 'r', encoding='utf-8', errors='replace') as csvfile:
+                        # reader = csv.reader(csvfile)
+                        for i, row in enumerate(csvfile):
+                            if i < ROW_LIMIT:  # Limit to first ROW_LIMIT rows
+                                rows.append(row)
+                            else:
+                                break
+                    results["originalData"][resource_name] = rows
+                except Exception as e:
+                    # Silently skip if extraction fails; validation will catch issues
+                    results["originalData"][resource_name] = []
         
 
         # Create the package descriptor dynamically, inserting paths from `file_mappings`
@@ -391,28 +417,57 @@ def validate_package(spec_path, file1, file2, file3, file4, output_path):
                 ]
                 resource = transform(resource, steps=transform_steps)
             except Exception as e:
-                file_in_error_path = getattr(resource, "path", None)  # or resource.name, depending on your library
+                file_in_error_path = getattr(resource, "path", None)
                 file_in_error = os.path.basename(file_in_error_path) if file_in_error_path else None
                 error_message = str(e)
-                # Extract missing field name as before
+                # Extract missing field name
                 match = re.search(r"'(.*?)'", error_message)
                 missing_field = match.group(1) if match else "Unknown field"
 
-                # Create a unique key for this error to avoid duplicates
-                error_key = (missing_field)
+                # Create a unique key for this error to avoid duplicates (include file to differentiate)
+                error_key = (missing_field, file_in_error)
 
                 if error_key not in seen_errors:
                     seen_errors.add(error_key)
-                    file_info = f" in file '{file_in_error}'" if file_in_error else ""
+
+                    # Try to read actual CSV headers without loading entire file
+                    actual_headers = extract_csv_headers(file_in_error_path) if file_in_error_path else []
+
+                    # Try to find a matching header from the CSV (case-insensitive exact or fuzzy match)
+                    matched_header = None
+                    if actual_headers:
+                        # Exact case-insensitive match
+                        for h in actual_headers:
+                            if h.casefold() == missing_field.casefold():
+                                matched_header = h
+                                break
+
+                        # Fallback to fuzzy matching if no exact match
+                        if matched_header is None:
+                            close = difflib.get_close_matches(missing_field, actual_headers, n=1, cutoff=0.6)
+                            if close:
+                                matched_header = close[0]
+
+                    headers_display = ", ".join(actual_headers) if actual_headers else "Unavailable"
+
+                    # Report CSV field name when found, otherwise fall back to schema field name
+                    reported_field = matched_header if matched_header else missing_field
+
                     user_friendly_message = (
-                        f"The field '{missing_field}' is missing or incorrectly named in the dataset. "
-                        f"Please check if it exists in the CSV file and matches the expected schema."
+                        f"The field '{reported_field}' (expected schema field '{missing_field}') is missing or incorrectly named in file '{file_in_error}'. "
+                        f"Available CSV headers: {headers_display}. Please check if the field exists or is spelled differently."
                     )
+
                     results["errorsSummary"].append({
-                        "fieldName": missing_field,
+                        "fieldName": reported_field,
+                        "expectedField": missing_field,
                         "message": user_friendly_message,
-                        "type": "data-processing-errors"
+                        "type": "data-processing-errors",
+                        "csvFields": actual_headers
                     })
+        
+        # Force garbage collection to free memory
+        gc.collect()
        
 
         # Create checklist with only detected flag fields
@@ -431,7 +486,8 @@ def validate_package(spec_path, file1, file2, file3, file4, output_path):
          
 
         # Add the validation report to results
-        results["report"] = report.to_dict()
+        #results["report"] = report.to_dict()
+        results["report"] = report
         
 
     except FileNotFoundError as e:
