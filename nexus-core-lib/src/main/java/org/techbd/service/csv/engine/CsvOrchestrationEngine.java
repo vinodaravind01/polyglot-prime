@@ -973,7 +973,6 @@ public class CsvOrchestrationEngine {
                     String line;
 
                     while ((line = reader.readLine()) != null) {
-                        log.info("argument : " + line);
                         output.append(line).append("\n");
                     }
                 }
