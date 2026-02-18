@@ -2,14 +2,35 @@
   <id>78fd5c66-613e-46dd-bd45-c3dd0021a5fb</id>
   <nextMetaDataId>4</nextMetaDataId>
   <name>FhirBundlleSubmission</name>
-  <description>Version: 0.8.9
-increase request time out to 30000</description>
-  <revision>6</revision>
+  <description>Version: 0.8.10
+channel map usage fix for mc jdbc url</description>
+  <revision>4</revision>
   <sourceConnector version="4.6.1">
     <metaDataId>0</metaDataId>
     <name>sourceConnector</name>
     <properties class="com.mirth.connect.connectors.http.HttpReceiverProperties" version="4.6.1">
       <pluginProperties>
+        <com.mirth.connect.plugins.ssl.SSLSettingsProperties version="4.6.1">
+  <sslEnabled>false</sslEnabled>
+          <mutualTlsEnabled>false</mutualTlsEnabled>
+          <verifyHostname>false</verifyHostname>
+          <keystorePath/>
+          <keystorePassword/>
+          <certAlias/>
+          <certPassword/>
+          <truststorePath/>
+          <truststorePassword/>
+          <tls13>true</tls13>
+          <tls12>true</tls12>
+          <tls11>true</tls11>
+          <keystoreType/>
+          <truststoreType/>
+          <keystoreSettingFromSystem>false</keystoreSettingFromSystem>
+          <keystoreUid/>
+          <myCertificateAlias/>
+          <truststoreSettingFromSystem>false</truststoreSettingFromSystem>
+          <truststoreUid/>
+        </com.mirth.connect.plugins.ssl.SSLSettingsProperties>
         <com.mirth.connect.plugins.httpauth.NoneHttpAuthProperties version="4.6.1">
   <authType>NONE</authType>
         </com.mirth.connect.plugins.httpauth.NoneHttpAuthProperties>
@@ -190,7 +211,7 @@ try {
         throw &quot; MC_JDBC_URL retrieved from Lookup Manager is empty.&quot;;
     }
     jdbcUrl = jdbcUrl.trim(); // IMPORTANT: remove trailing spaces
-    channelMap.put(&quot;jdbcUrl&quot;, jdbcUrl);
+     globalMap.put(&quot;jdbcUrl&quot;, jdbcUrl);
      
      logger.info(&quot;JDBC URL loaded successfully from Lookup Manager: &quot; + jdbcUrl);
 
@@ -499,7 +520,29 @@ responseMap.put(&apos;status&apos;, &apos;200&apos;); // Set HTTP status 200
       <metaDataId>1</metaDataId>
       <name>dest_bundle</name>
       <properties class="com.mirth.connect.connectors.http.HttpDispatcherProperties" version="4.6.1">
-        <pluginProperties/>
+        <pluginProperties>
+          <com.mirth.connect.plugins.ssl.SSLSettingsProperties version="4.6.1">
+  <sslEnabled>false</sslEnabled>
+            <mutualTlsEnabled>false</mutualTlsEnabled>
+            <verifyHostname>false</verifyHostname>
+            <keystorePath/>
+            <keystorePassword/>
+            <certAlias/>
+            <certPassword/>
+            <truststorePath/>
+            <truststorePassword/>
+            <tls13>true</tls13>
+            <tls12>true</tls12>
+            <tls11>true</tls11>
+            <keystoreType/>
+            <truststoreType/>
+            <keystoreSettingFromSystem>false</keystoreSettingFromSystem>
+            <keystoreUid/>
+            <myCertificateAlias/>
+            <truststoreSettingFromSystem>false</truststoreSettingFromSystem>
+            <truststoreUid/>
+          </com.mirth.connect.plugins.ssl.SSLSettingsProperties>
+        </pluginProperties>
         <destinationConnectorProperties version="4.6.1">
           <queueEnabled>false</queueEnabled>
           <sendFirst>false</sendFirst>
@@ -706,7 +749,29 @@ responseMap.put(&apos;status&apos;, &apos;200&apos;); // Set HTTP status 200
       <metaDataId>3</metaDataId>
       <name>dest_datalake</name>
       <properties class="com.mirth.connect.connectors.http.HttpDispatcherProperties" version="4.6.1">
-        <pluginProperties/>
+        <pluginProperties>
+          <com.mirth.connect.plugins.ssl.SSLSettingsProperties version="4.6.1">
+  <sslEnabled>false</sslEnabled>
+            <mutualTlsEnabled>false</mutualTlsEnabled>
+            <verifyHostname>false</verifyHostname>
+            <keystorePath/>
+            <keystorePassword/>
+            <certAlias/>
+            <certPassword/>
+            <truststorePath/>
+            <truststorePassword/>
+            <tls13>true</tls13>
+            <tls12>true</tls12>
+            <tls11>true</tls11>
+            <keystoreType/>
+            <truststoreType/>
+            <keystoreSettingFromSystem>false</keystoreSettingFromSystem>
+            <keystoreUid/>
+            <myCertificateAlias/>
+            <truststoreSettingFromSystem>false</truststoreSettingFromSystem>
+            <truststoreUid/>
+          </com.mirth.connect.plugins.ssl.SSLSettingsProperties>
+        </pluginProperties>
         <destinationConnectorProperties version="4.6.1">
           <queueEnabled>false</queueEnabled>
           <sendFirst>false</sendFirst>
@@ -2099,25 +2164,25 @@ return;</undeployScript>
     <metadata>
       <enabled>true</enabled>
       <lastModified>
-        <time>1770889735520</time>
+        <time>1771401791715</time>
         <timezone>Asia/Calcutta</timezone>
       </lastModified>
       <pruningSettings>
         <archiveEnabled>true</archiveEnabled>
         <pruneErroredMessages>false</pruneErroredMessages>
       </pruningSettings>
-      <userId>1</userId>
+      <userId>10</userId>
     </metadata>
     <channelTags>
       <channelTag>
-        <id>e8ac8112-03cb-4910-9227-a080b4fd581c</id>
-        <name>0_8_9</name>
+        <id>0bf67a4f-277c-4977-b4bc-f9ec6ab1468c</id>
+        <name>0_8_10</name>
         <channelIds>
           <string>78fd5c66-613e-46dd-bd45-c3dd0021a5fb</string>
         </channelIds>
         <backgroundColor>
           <red>255</red>
-          <green>0</green>
+          <green>255</green>
           <blue>0</blue>
           <alpha>255</alpha>
         </backgroundColor>

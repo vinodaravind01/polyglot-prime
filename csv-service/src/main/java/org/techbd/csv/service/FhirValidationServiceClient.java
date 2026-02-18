@@ -60,7 +60,7 @@ public class FhirValidationServiceClient {
     public FhirValidationServiceClient(
             @Value("${TECHBD_BL_BASEURL}") String baseUrl,
             @Value("${FHIR_CLIENT_MAX_BUFFER_SIZE:10485760}") int maxBufferSize,
-            @Value("${FHIR_CLIENT_CONNECT_TIMEOUT_MS:5000}") int connectTimeoutMs,
+            @Value("${FHIR_CLIENT_CONNECT_TIMEOUT_MS:30000}") int connectTimeoutMs,
             @Value("${FHIR_CLIENT_READ_TIMEOUT_SECONDS:60}") int readTimeoutSeconds,
             @Value("${FHIR_CLIENT_WRITE_TIMEOUT_SECONDS:60}") int writeTimeoutSeconds,
             @Value("${FHIR_CLIENT_BLOCK_TIMEOUT_SECONDS:90}") int blockTimeoutSeconds) {
