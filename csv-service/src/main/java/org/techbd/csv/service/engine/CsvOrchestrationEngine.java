@@ -924,6 +924,9 @@ public class CsvOrchestrationEngine {
         public String validateCsvUsingPython(final List<FileDetail> fileDetails, final String zipFileInteractionId)
                 throws Exception {
             log.info("CsvService : validateCsvUsingPython BEGIN for zipFileInteractionId :{} " + zipFileInteractionId);
+
+            Process process = null; // ← CHANGE: Declare outside try block
+
             try {
                 final var config = appConfig.getCsv().validation();
                 if (config == null) {
@@ -961,7 +964,7 @@ public class CsvOrchestrationEngine {
                 processBuilder.command(command);
                 processBuilder.redirectErrorStream(true);
 
-                final Process process = processBuilder.start();
+                process = processBuilder.start();
 
                 // Capture and handle output/error streams
                 final StringBuilder output = new StringBuilder();
@@ -971,7 +974,6 @@ public class CsvOrchestrationEngine {
                     String line;
 
                     while ((line = reader.readLine()) != null) {
-                        log.info("argument : " + line);
                         output.append(line).append("\n");
                     }
                 }
@@ -984,6 +986,10 @@ public class CsvOrchestrationEngine {
                 }
 
                 final int exitCode = process.waitFor();
+
+                // Force destroy process immediately after waitFor
+                process.destroyForcibly();
+
                 if (exitCode != 0) {
                     log.error("Python script execution failed. Exit code: {}, Error: {} for zipFileInteractionId : {}",
                             exitCode, errorOutput.toString(), zipFileInteractionId);
@@ -995,8 +1001,21 @@ public class CsvOrchestrationEngine {
                 return output.toString();
 
             } catch (IOException | InterruptedException e) {
-                log.error("Error during CSV validation: {} for zipFileInteractionId : {}", e.getMessage(), zipFileInteractionId, e);
-                throw new RuntimeException("Error during CSV validation : "+e.getMessage(), e);
+                log.error("Error during CSV validation: {} for zipFileInteractionId : {}", e.getMessage(),
+                        zipFileInteractionId, e);
+                throw new RuntimeException("Error during CSV validation : " + e.getMessage(), e);
+            } finally {
+                // Cleanup block to force-kill process if still alive
+                if (process != null && process.isAlive()) {
+                    log.warn("Python process still alive, forcing destruction for zipFileInteractionId: {}",
+                            zipFileInteractionId);
+                    process.destroyForcibly();
+                    try {
+                        process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
         }
 

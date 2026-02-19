@@ -20,7 +20,7 @@
     "HL7_XSLT_PATH" : "/opt/bridgelink/hl7-techbd-schema-files",
     "HUB_UI_URL" : "https://hub.sandbox.dev.techbd.org",
     "MC_CCDA_SCHEMA_FOLDER" : "/opt/bridgelink/ccda-techbd-schema-files/",
-    "MC_FHIR_BUNDLE_SUBMISSION_API_URL" : "https://1.nexus-txd.sbx.techbd.org:9000/Bundle",
+    "MC_FHIR_BUNDLE_SUBMISSION_API_URL" : "http://localhost:9000/Bundle",
     "MC_VALID_FHIR_URLS" : "http://shinny.org/us/ny/hrsn,http://test.shinny.org/us/ny/hrsn",
     "PROFILE_URL_BUNDLE" : "/StructureDefinition/SHINNYBundleProfile",
     "PROFILE_URL_CONSENT" : "/StructureDefinition/shinny-Consent",
@@ -38,5 +38,5 @@
     "TECHBD_CSV_SERVICE_API_URL" : "https://nexus.csv.sandbox.techbd.org",
     "TECHBD_DEFAULT_DATALAKE_API_URL" : "https://uzrlhp39e0.execute-api.us-east-1.amazonaws.com/dev/HRSNBundle"
   },
-  "exportDate" : "2026-02-10T12:51:54.352+00:00"
+  "exportDate" : "2026-02-18T08:13:27.535+00:00"
 }

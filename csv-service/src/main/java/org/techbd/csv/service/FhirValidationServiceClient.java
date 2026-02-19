@@ -60,7 +60,7 @@ public class FhirValidationServiceClient {
     public FhirValidationServiceClient(
             @Value("${TECHBD_BL_BASEURL}") String baseUrl,
             @Value("${FHIR_CLIENT_MAX_BUFFER_SIZE:10485760}") int maxBufferSize,
-            @Value("${FHIR_CLIENT_CONNECT_TIMEOUT_MS:5000}") int connectTimeoutMs,
+            @Value("${FHIR_CLIENT_CONNECT_TIMEOUT_MS:30000}") int connectTimeoutMs,
             @Value("${FHIR_CLIENT_READ_TIMEOUT_SECONDS:60}") int readTimeoutSeconds,
             @Value("${FHIR_CLIENT_WRITE_TIMEOUT_SECONDS:60}") int writeTimeoutSeconds,
             @Value("${FHIR_CLIENT_BLOCK_TIMEOUT_SECONDS:90}") int blockTimeoutSeconds) {
@@ -140,7 +140,7 @@ public class FhirValidationServiceClient {
         getStringParam(params, "overrideRequestUri").ifPresent(builder::overrideRequestUri);
         getStringParam(params, "provenance").ifPresent(builder::provenance);
         getStringParam(params, "healthCheck").ifPresent(builder::healthCheck);
-        getStringParam(params, "customDataLakeApi").ifPresent(builder::customDataLakeApi);
+        getStringParam(params, "X-TechBD-DataLake-API-URL").ifPresent(builder::customDataLakeApi);
         getStringParam(params, "dataLakeApiContentType").ifPresent(builder::dataLakeApiContentType);
         getStringParam(params, "mtlsStrategy").ifPresent(builder::mtlsStrategy);
         getStringParam(params, "elaboration").ifPresent(builder::elaboration);
